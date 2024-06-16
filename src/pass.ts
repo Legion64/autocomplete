@@ -1,9 +1,16 @@
 const listPasswords: Fig.Generator = {
-  script: function () {
-    return `grep -r -l '' $HOME/.password-store --exclude-dir=.git`;
-  },
-  postProcess: (output) => {
-    return output.split("\n").map((password) => ({
+  custom: async (_tokens, executeCommand, context) => {
+    const { stdout } = await executeCommand({
+      command: "grep",
+      args: [
+        "-r",
+        "-l",
+        "",
+        `${context.environmentVariables["HOME"]}/.password-store`,
+        "--exclude-dir=.git",
+      ],
+    });
+    return stdout.split("\n").map((password) => ({
       name: password.split(".password-store/").pop().replace(".gpg", ""),
       icon: "🔐",
     }));
@@ -11,11 +18,15 @@ const listPasswords: Fig.Generator = {
 };
 
 const listDirectories: Fig.Generator = {
-  script: function () {
-    return `ls -dR1a $HOME/.password-store/*/`;
-  },
-  postProcess: (output) => {
-    return output.split("\n").map((dir) => ({
+  custom: async (_tokens, executeCommand, context) => {
+    const { stdout } = await executeCommand({
+      command: "ls",
+      args: [
+        "-dR1a",
+        `${context.environmentVariables["HOME"]}/.password-store`,
+      ],
+    });
+    return stdout.split("\n").map((dir) => ({
       name: dir.split(".password-store/").pop(),
       icon: "📁",
     }));
@@ -113,7 +124,6 @@ const completionSpec: Fig.Spec = {
         {
           name: "old-path",
           description: "The old password name or directory",
-
           generators: listPasswords,
         },
         {
@@ -136,7 +146,6 @@ const completionSpec: Fig.Spec = {
         {
           name: "old-path",
           description: "The old password name or directory",
-
           generators: listPasswords,
         },
         {
@@ -158,7 +167,6 @@ const completionSpec: Fig.Spec = {
       args: {
         name: "pass-name",
         description: "The password name",
-
         generators: listPasswords,
       },
       options: [
@@ -255,7 +263,6 @@ const completionSpec: Fig.Spec = {
       args: {
         name: "pass-name",
         description: "The password you want to edit",
-
         generators: listPasswords,
       },
     },

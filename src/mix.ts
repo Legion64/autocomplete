@@ -34,7 +34,6 @@ const completionSpec: Fig.Spec = {
             name: "app",
           },
         },
-
         {
           name: "--modules",
           description: "Name the modules in the generated code skeleton",
@@ -140,7 +139,7 @@ const completionSpec: Fig.Spec = {
         description: "Prints documentation for a given task",
         generators: {
           cache: { ttl: 10000 },
-          script: "mix help",
+          script: ["mix", "help"],
           postProcess: makeTaskSuggestions,
         },
       },
@@ -166,7 +165,7 @@ const completionSpec: Fig.Spec = {
     isOptional: true,
     generators: {
       cache: { ttl: 10000 },
-      script: "mix help",
+      script: ["mix", "help"],
       postProcess: makeTaskSuggestions,
     },
   },

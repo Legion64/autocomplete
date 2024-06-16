@@ -5,9 +5,15 @@
 const _gen: Record<string, Fig.Generator> = {
   npm: {
     script(context) {
-      if (context[context.length - 1] === "") return "";
+      if (context[context.length - 1] === "") return undefined;
       const searchTerm = context[context.length - 1];
-      return `curl -s -H "Accept: application/json" "https://api.npms.io/v2/search?q=${searchTerm}&size=20"`;
+      return [
+        "curl",
+        "-s",
+        "-H",
+        "Accept: application/json",
+        `https://api.npms.io/v2/search?q=${searchTerm}&size=20`,
+      ];
     },
     postProcess(script: string) {
       try {
@@ -28,17 +34,17 @@ const _gen: Record<string, Fig.Generator> = {
     },
   },
   "xcode-configuration": {
-    script: "xcodebuild -project ios/*.xcodeproj -list -json",
+    script: ["xcodebuild", "-project", "ios/*.xcodeproj", "-list", "-json"],
     postProcess: (script: string) =>
       JSON.parse(script).project.configurations.map((name) => ({ name })),
   },
   "xcode-scheme": {
-    script: "xcodebuild -project ios/*.xcodeproj -list -json",
+    script: ["xcodebuild", "-project", "ios/*.xcodeproj", "-list", "-json"],
     postProcess: (script: string) =>
       JSON.parse(script).project.schemes.map((name) => ({ name })),
   },
   "xcode-devices": {
-    script: "xcrun xctrace list devices",
+    script: ["xcrun", "xctrace", "list", "devices"],
     postProcess: (script: string) =>
       script
         .split("\n")
@@ -53,7 +59,7 @@ const _gen: Record<string, Fig.Generator> = {
         })),
   },
   "max-workers": {
-    script: "sysctl -n hw.ncpu",
+    script: ["sysctl", "-n", "hw.ncpu"],
     postProcess: (script: string) => {
       const count = Number(script);
       return Array.from({ length: count }, (_, i) => {
@@ -315,7 +321,6 @@ const completionSpec: Fig.Spec = {
           description: "Type of build: [archive|simulator]",
           args: {
             name: "archive|simulator",
-
             suggestions: [
               {
                 name: "archive",
@@ -396,7 +401,6 @@ const completionSpec: Fig.Spec = {
             "Path to your Distribution Certificate P12 (set password as EXPO_IOS_DIST_P12_PASSWORD environment variable)",
           args: {
             name: "path",
-
             template: "filepaths",
           },
           icon: "https://raw.githubusercontent.com/expo/expo-cli/master/assets/fig/path.png",
@@ -424,7 +428,6 @@ const completionSpec: Fig.Spec = {
           description: "Path to your Push Key .p8 file",
           args: {
             name: "path",
-
             template: "filepaths",
           },
           icon: "https://raw.githubusercontent.com/expo/expo-cli/master/assets/fig/path.png",
@@ -434,7 +437,6 @@ const completionSpec: Fig.Spec = {
           description: "Path to your Provisioning Profile",
           args: {
             name: "path",
-
             template: "filepaths",
           },
           icon: "https://raw.githubusercontent.com/expo/expo-cli/master/assets/fig/path.png",
@@ -585,7 +587,6 @@ const completionSpec: Fig.Spec = {
           description: "Path to your Keystore: *.jks",
           args: {
             name: "path",
-
             template: "filepaths",
           },
           icon: "https://raw.githubusercontent.com/expo/expo-cli/master/assets/fig/key.png",
@@ -946,7 +947,6 @@ const completionSpec: Fig.Spec = {
           description: "Platform: [android|ios]",
           args: {
             name: "platform",
-
             suggestions: [
               {
                 name: "android",
@@ -1103,7 +1103,6 @@ const completionSpec: Fig.Spec = {
           description: "Platforms to sync: ios, android, all. Default: all",
           args: {
             name: "platform",
-
             suggestions: [
               {
                 name: "all",
@@ -1223,7 +1222,6 @@ const completionSpec: Fig.Spec = {
           description: "Platforms to sync: ios, android, all. Default: all",
           args: {
             name: "platform",
-
             suggestions: [
               {
                 name: "all",
@@ -1296,7 +1294,6 @@ const completionSpec: Fig.Spec = {
           description: "Detached project platform",
           args: {
             name: "platform",
-
             suggestions: [
               {
                 name: "android",
@@ -1346,7 +1343,6 @@ const completionSpec: Fig.Spec = {
           description: "Detached project platform",
           args: {
             name: "platform",
-
             suggestions: [
               {
                 name: "android",
@@ -1406,7 +1402,6 @@ const completionSpec: Fig.Spec = {
           description: "Platforms: android, ios, all",
           args: {
             name: "platform",
-
             suggestions: [
               {
                 name: "all",
@@ -1455,7 +1450,6 @@ const completionSpec: Fig.Spec = {
           description: "The directory to export the static files to",
           args: {
             name: "dir",
-
             template: "folders",
           },
           icon: "https://raw.githubusercontent.com/expo/expo-cli/master/assets/fig/path.png",
@@ -1547,7 +1541,6 @@ const completionSpec: Fig.Spec = {
           description: "Target environment for which this export is intended",
           args: {
             name: "managed|bare",
-
             suggestions: [
               {
                 name: "managed",
@@ -1565,7 +1558,6 @@ const completionSpec: Fig.Spec = {
           description: "A repeatable source dir to merge in",
           args: {
             name: "dir",
-
             template: "folders",
           },
           icon: "https://raw.githubusercontent.com/expo/expo-cli/master/assets/fig/path.png",
@@ -1771,7 +1763,6 @@ const completionSpec: Fig.Spec = {
           description: "Type of config to show",
           args: {
             name: "public|prebuild|introspect",
-
             suggestions: [
               {
                 name: "public",
@@ -2182,7 +2173,6 @@ const completionSpec: Fig.Spec = {
             "Target environment for which this publish is intended. Options are `managed` or `bare`",
           args: {
             name: "managed|bare",
-
             suggestions: [
               {
                 name: "managed",
@@ -2343,7 +2333,6 @@ const completionSpec: Fig.Spec = {
           description: "The platform to rollback",
           args: {
             name: "platform",
-
             suggestions: [
               {
                 name: "android",
@@ -2422,7 +2411,6 @@ const completionSpec: Fig.Spec = {
             "Filter by platform, android or ios. Defaults to both platforms",
           args: {
             name: "platform",
-
             suggestions: [
               {
                 name: "android",

@@ -1,19 +1,21 @@
 const completionSpec: Fig.Spec = {
   name: "artisan",
   description: "Laravel Artisan Command",
-  generateSpec: async (tokens, executeShellCommand) => {
-    var out = await executeShellCommand("php artisan list --format=json");
+  generateSpec: async (_, executeShellCommand) => {
+    var { stdout } = await executeShellCommand({
+      command: "php",
+      args: ["artisan", "list", "--format=json"],
+    });
     const subcommands = [];
 
     try {
-      const commandDefinition = JSON.parse(out);
+      const commandDefinition = JSON.parse(stdout);
 
       commandDefinition.commands.map((command) => {
         subcommands.push({
           name: command.name,
           description: command.description,
           icon: "https://web.tinkerwell.app/img/laravel.3cab6a56.png",
-
           args: Object.keys(command.definition.arguments).map((argumentKey) => {
             const argument = command.definition.arguments[argumentKey];
 

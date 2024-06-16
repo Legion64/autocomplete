@@ -1,5 +1,5 @@
 const envNameGenerator: Fig.Generator = {
-  script: "amplify env list --json",
+  script: ["amplify", "env", "list", "--json"],
   postProcess: function (out) {
     const envContent = JSON.parse(out);
     return envContent["envs"].map((env: string) => {
@@ -153,6 +153,15 @@ const completionSpec: Fig.Spec = {
       subcommands: amplifyCategories,
     },
     {
+      name: "upgrade",
+      description: "Download and install the latest version of the Amplify CLI",
+    },
+    {
+      name: "uninstall",
+      description:
+        "Remove all global Amplify configuration files and uninstall the Amplify CLI. This will not delete any Amplify projects",
+    },
+    {
       name: "notifications",
       subcommands: categoryCommands,
     },
@@ -239,7 +248,6 @@ const completionSpec: Fig.Spec = {
       description:
         "If using temporary cloud provider credentials, this logs out of the account",
     },
-
     {
       name: "env",
       description: "Display all commands available for new Amplify project",

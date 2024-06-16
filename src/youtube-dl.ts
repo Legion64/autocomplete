@@ -1,9 +1,11 @@
 const youtubeDlGenerators: Record<string, Fig.Generator> = {
   listVideos: {
-    script: (context) =>
-      `youtube-dl --flat-playlist -J ${context.filter((token) =>
-        token.includes("youtube.")
-      )}`,
+    script: (context) => [
+      "youtube-dl",
+      "--flat-playlist",
+      "-J",
+      ...context.filter((token) => token.includes("youtube.")),
+    ],
 
     postProcess: function (out) {
       try {
@@ -23,7 +25,7 @@ const youtubeDlGenerators: Record<string, Fig.Generator> = {
   },
 
   listClipboard: {
-    script: "pbpaste",
+    script: ["pbpaste"],
     postProcess: function (out) {
       const regex = new RegExp(
         "^(https?://)?(www.)?(youtube.com|youtu.?be)/.+$"
@@ -180,7 +182,6 @@ const completionSpec: Fig.Spec = {
       description:
         "Do not bypass geographic restriction via faking X-Forwarded-For HTTP header",
     },
-
     {
       name: "--geo-bypass-country",
       description:
@@ -942,20 +943,27 @@ const completionSpec: Fig.Spec = {
       args: {
         name: "MSO",
         generators: {
-          script: (context) =>
-            `youtube-dl ${context.filter((token) =>
-              token.includes("youtube.")
-            )} --simulate --ap-list-mso | tail -n +3 | tr -s " "`,
+          custom: async (tokens, executeCommand, context) => {
+            const { stdout } = await executeCommand({
+              command: "youtube-dl",
+              args: [
+                ...tokens.filter((token) => token.includes("youtube.")),
+                "--simulate",
+                "--ap-list-mso",
+              ],
+            });
 
-          postProcess: (out) =>
-            out.split("\n").map((line) => {
-              const [name, ...description] = line.split(" ");
-
-              return {
-                name,
-                description: description.join(" "),
-              };
-            }),
+            return stdout
+              .split("\n")
+              .slice(3)
+              .map((line) => {
+                const [name, ...description] = line.split(" ");
+                return {
+                  name,
+                  description: description.join(" "),
+                };
+              });
+          },
         },
       },
     },
@@ -1042,7 +1050,7 @@ const completionSpec: Fig.Spec = {
         "Embed subtitles in the video (only for mp4, webm and mkv videos)",
     },
     {
-      name: "--embed-thumbnails",
+      name: "--embed-thumbnail",
       description: "Embed thumbnail in the audio as cover art",
     },
     {

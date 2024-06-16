@@ -1,8 +1,13 @@
 const packageList: Fig.Generator = {
-  script:
-    "curl -sH 'accept-encoding: gzip' https://package.elm-lang.org/search.json | gunzip",
+  script: [
+    "curl",
+    "-sH",
+    "accept-encoding: gzip",
+    "--compressed",
+    "https://package.elm-lang.org/search.json",
+  ],
   cache: {
-    ttl: 100 * 24 * 60 * 60 * 3, // 3 days
+    ttl: 1000 * 24 * 60 * 60 * 3, // 3 days
   },
   postProcess: (output) => {
     return JSON.parse(output).map((package_) => ({
@@ -76,7 +81,7 @@ const completionSpec: Fig.Spec = {
         name: "package",
         description: "The name of the package to install",
         debounce: true,
-        isVariadic: false,
+
         generators: packageList,
       },
       options: [
@@ -148,7 +153,6 @@ const completionSpec: Fig.Spec = {
         {
           name: "package",
           isOptional: true,
-          isVariadic: false,
         },
         {
           name: "version",

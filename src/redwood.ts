@@ -3,8 +3,11 @@ import prismaSpec from "./prisma";
 const icon = "https://avatars.githubusercontent.com/u/45050444?s=200&v=4";
 
 const scripts: Fig.Generator = {
-  script:
+  script: [
+    "bash",
+    "-c",
     "until [[ -f redwood.toml ]] || [[ $PWD = '/' ]]; do cd ..; done; ls -1p scripts/",
+  ],
   postProcess: (output) => {
     if (output.trim() === "") {
       return [];
@@ -122,7 +125,6 @@ const completionSpec: Fig.Spec = {
           args: {
             name: "side",
             description: "Select side to build",
-
             suggestions: ["api", "web"],
           },
           options: [
@@ -881,7 +883,6 @@ const completionSpec: Fig.Spec = {
       description: "Data migration tools",
       args: {
         name: "command",
-
         suggestions: [
           {
             name: "install",
